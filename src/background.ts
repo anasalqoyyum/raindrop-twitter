@@ -14,8 +14,8 @@
     }
   }
 
-  api.runtime.onMessage.addListener((message: unknown) => {
-    if (isBookmarkMessage(message)) void handleBookmark(message.tweetId, message.url)
+  api.runtime.onMessage.addListener((message: unknown, sender) => {
+    if (isBookmarkMessage(message)) void handleBookmark(message.tweetId, message.url, sender.tab?.id)
   })
 
   api.alarms.onAlarm.addListener(alarm => {
@@ -32,7 +32,7 @@
     return m?.type === 'bookmark' && typeof m.tweetId === 'string' && typeof m.url === 'string'
   }
 
-  async function handleBookmark(tweetId: string, url: string) {
+  async function handleBookmark(tweetId: string, url: string, tabId?: number) {
     if (pending.has(tweetId)) return
     pending.add(tweetId)
     try {
@@ -40,8 +40,9 @@
       if (syncedIds[tweetId]) return
       await syncTweet(tweetId, url)
       flashBadge('✓')
+      notifyTab(tabId, true, 'Saved to Raindrop')
     } catch (error) {
-      await handleFailure({ tweetId, url, attempts: 0 }, error)
+      await handleFailure({ tweetId, url, attempts: 0 }, error, tabId)
     } finally {
       pending.delete(tweetId)
     }
@@ -89,7 +90,7 @@
     }
   }
 
-  async function handleFailure(item: QueueItem, error: unknown) {
+  async function handleFailure(item: QueueItem, error: unknown, tabId?: number) {
     const status = error instanceof SyncError ? error.status : undefined
     const permanent = error instanceof SyncError && error.permanent
     const retryable = !permanent && (status === undefined || status === 429 || status >= 500)
@@ -98,8 +99,10 @@
       const message = error instanceof Error ? error.message : String(error)
       await logError(`Tweet ${item.tweetId}: ${message}`)
       flashBadge('!')
+      notifyTab(tabId, false, message)
       return
     }
+    notifyTab(tabId, false, 'Raindrop sync failed — will retry')
 
     const queue = await storageGet<QueueItem[]>('queue', [])
     if (!queue.some(q => q.tweetId === item.tweetId)) {
@@ -139,6 +142,12 @@
       throw new SyncError(`Raindrop API ${path} returned HTTP ${response.status}`, response.status)
     }
     return response.json() as Promise<T>
+  }
+
+  function notifyTab(tabId: number | undefined, ok: boolean, message: string) {
+    if (tabId === undefined) return
+    const payload: SyncResultMessage = { type: 'sync-result', ok, message }
+    void Promise.resolve(api.tabs.sendMessage(tabId, payload)).catch(() => {})
   }
 
   function flashBadge(text: '✓' | '!') {

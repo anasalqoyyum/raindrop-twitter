@@ -13,6 +13,12 @@ interface BookmarkMessage {
   url: string
 }
 
+interface SyncResultMessage {
+  type: 'sync-result'
+  ok: boolean
+  message: string
+}
+
 interface QueueItem {
   tweetId: string
   url: string
