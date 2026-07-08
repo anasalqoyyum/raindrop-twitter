@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Twitter → Raindrop Bookmark Sync</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+      }
+      body {
+        max-width: 480px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.5;
+      }
+      h1 {
+        font-size: 1.25rem;
+      }
+      label {
+        display: block;
+        margin: 1rem 0 0.25rem;
+        font-weight: 600;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 0.4rem 0.5rem;
+        box-sizing: border-box;
+        font: inherit;
+      }
+      button {
+        margin-top: 1rem;
+        padding: 0.4rem 1rem;
+        font: inherit;
+        cursor: pointer;
+      }
+      .hint {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        margin-top: 0.25rem;
+      }
+      #status {
+        margin-top: 0.75rem;
+        min-height: 1.5em;
+      }
+      #status.error {
+        color: #c62828;
+      }
+      #status.ok {
+        color: #2e7d32;
+      }
+      #errors {
+        padding-left: 1.2rem;
+        font-size: 0.85rem;
+      }
+      #errors li {
+        margin-bottom: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Twitter → Raindrop Bookmark Sync</h1>
+
+    <label for="token">Raindrop test token</label>
+    <input id="token" type="password" autocomplete="off" placeholder="Paste your test token" />
+    <p class="hint">
+      Get it at <a href="https://app.raindrop.io/settings/integrations" target="_blank">app.raindrop.io/settings/integrations</a> → For
+      Developers → create app → copy <b>Test token</b>.
+    </p>
+
+    <label for="collection">Collection</label>
+    <select id="collection" disabled>
+      <option>Save &amp; test first to load collections</option>
+    </select>
+
+    <label for="tags">Tags (comma-separated)</label>
+    <input id="tags" type="text" placeholder="twitter" />
+
+    <button id="save">Save &amp; test connection</button>
+    <p id="status"></p>
+
+    <h2 style="font-size: 1rem; margin-top: 2rem">Recent errors</h2>
+    <ul id="errors">
+      <li>None</li>
+    </ul>
+    <button id="clear-errors">Clear errors</button>
+
+    <script src="dist/options.js"></script>
+  </body>
+</html>

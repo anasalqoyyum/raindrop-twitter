@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Twitter → Raindrop Bookmark Sync",
+  "version": "0.1.0",
+  "description": "Saves every tweet you bookmark on x.com to a Raindrop.io collection.",
+  "permissions": ["storage", "alarms"],
+  "host_permissions": ["https://api.raindrop.io/*", "https://x.com/*", "https://twitter.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://x.com/*", "https://twitter.com/*"],
+      "js": ["dist/content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://x.com/*", "https://twitter.com/*"],
+      "js": ["dist/page-intercept.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "background": {
+    "service_worker": "dist/background.js",
+    "scripts": ["dist/background.js"]
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "Twitter → Raindrop Bookmark Sync"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "twitter-raindrop-sync@anas.dev",
+      "strict_min_version": "128.0"
+    }
+  }
+}
