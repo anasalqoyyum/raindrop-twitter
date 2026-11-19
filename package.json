@@ -1,6 +1,6 @@
 {
   "name": "raindrop-twitter-extension",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Browser extension that saves every tweet you bookmark on x.com to a Raindrop.io collection",
   "type": "module",
