@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Twitter → Raindrop Bookmark Sync",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Saves every tweet you bookmark on x.com to a Raindrop.io collection.",
   "permissions": ["storage", "alarms"],
   "host_permissions": ["https://api.raindrop.io/*", "https://x.com/*", "https://twitter.com/*"],
