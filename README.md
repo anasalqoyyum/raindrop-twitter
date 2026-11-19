@@ -37,7 +37,7 @@ Build first — the manifest references `dist/`.
 
 ## How it works
 
-- A MAIN-world script wraps `fetch` and watches for Twitter's `CreateBookmark` GraphQL call (catches clicks and the `B` shortcut); a `data-testid="bookmark"` click listener acts as fallback
+- A MAIN-world script wraps `fetch` and watches for Twitter's `BookmarkAdd` / `CreateBookmark` GraphQL calls (catches clicks and the `B` shortcut); a `[data-engagement-action="bookmark"]` / `data-testid="bookmark"` click listener acts as fallback
 - The background worker dedupes by tweet id (in-memory pending set + `storage.local` cache + server-side search) and POSTs to the Raindrop API
 - Failed syncs (network, 429, 5xx) retry with exponential backoff via the `alarms` API; permanent failures land in the options page error log
 - Toolbar badge flashes ✓ on sync, ! on failure

@@ -1,6 +1,15 @@
 ;(() => {
-  const CREATE_BOOKMARK = /\/i\/api\/graphql\/[^/]+\/CreateBookmark/
+  const CREATE_BOOKMARK = /\/(?:i\/api\/)?graphql\/[^/]+\/(?:BookmarkAdd|CreateBookmark)(?:[/?#]|$)/
   const originalFetch = window.fetch
+
+  function extractTweetId(text: string): string | null {
+    const parsed: unknown = JSON.parse(text)
+    if (typeof parsed !== 'object' || parsed === null || !('variables' in parsed)) return null
+    const { variables } = parsed
+    if (typeof variables !== 'object' || variables === null) return null
+    const id = 'tweetId' in variables ? variables.tweetId : 'tweet_id' in variables ? variables.tweet_id : undefined
+    return typeof id === 'string' && /^\d+$/.test(id) ? id : null
+  }
 
   window.fetch = function (this: unknown, input: RequestInfo | URL, init?: RequestInit) {
     let body: string | Request | null = null
@@ -17,8 +26,8 @@
         .then(async response => {
           if (!response.ok) return
           const text = typeof captured === 'string' ? captured : await captured.text()
-          const tweetId: unknown = JSON.parse(text)?.variables?.tweet_id
-          if (typeof tweetId === 'string' && tweetId) {
+          const tweetId = extractTweetId(text)
+          if (tweetId) {
             window.postMessage({ source: 'raindrop-twitter-sync', tweetId }, window.origin)
           }
         })
